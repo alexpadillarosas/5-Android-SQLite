@@ -86,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button clearButton = findViewById(R.id.clearButton);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clear(view);
+            }
+        });
+    }
+
+    private void clear(View view) {
+        nameEditText.getText().clear();
+        descriptionEditText.getText().clear();
+        scarinessSeekBar.setProgress(0, true);
+        nameEditText.requestFocus();
     }
 
     private void add(View view) {
