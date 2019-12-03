@@ -1,8 +1,5 @@
 package com.blueradix.android.sqlite;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -10,10 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
+
+//    private static final String
 
     DatabaseHelper databaseHelper;
     EditText nameEditText;
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         String description = descriptionEditText.getText().toString();
 
         boolean result = databaseHelper.update(Integer.valueOf(id), name, description, scarinessLevel);
-        if(result)
+        if (result)
             Snackbar.make(view, "Monster id " + id + " was updated ", Snackbar.LENGTH_SHORT).show();
         else
             Snackbar.make(view, "Monster id " + id + " was not updated ", Snackbar.LENGTH_SHORT).show();
@@ -126,18 +127,18 @@ public class MainActivity extends AppCompatActivity {
     private void viewAll(View view) {
         Cursor cursor = databaseHelper.getAll();
 
-        if(cursor.getCount()==0){
+        if (cursor.getCount() == 0) {
             cursor.close();
             showMessage("Records", "Nothing found");
-        }else{
-            StringBuffer buffer = new StringBuffer();
-            while (cursor.moveToNext()){
-                buffer.append("Id: " + cursor.getString(0) + "\n");
-                buffer.append("Name: " + cursor.getString(1) + "\n");
-                buffer.append("description: " + cursor.getString(2) + "\n");
-                buffer.append("scariness: " + cursor.getString(3) + "\n");
-                buffer.append("image: " + cursor.getString(4) + "\n");
-                buffer.append("_____________________________" + "\n");
+        } else {
+            StringBuilder buffer = new StringBuilder();
+            while (cursor.moveToNext()) {
+                buffer.append("Id: ").append(cursor.getString(0)).append(System.lineSeparator());
+                buffer.append("Name: ").append(cursor.getString(1)).append(System.lineSeparator());
+                buffer.append("description: ").append(cursor.getString(2)).append(System.lineSeparator());
+                buffer.append("scariness: ").append(cursor.getString(3)).append(System.lineSeparator());
+                buffer.append("image: ").append(cursor.getString(4)).append(System.lineSeparator());
+                buffer.append("_____________________________").append(System.lineSeparator());
             }
 
             cursor.close();
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showMessage(String title, String message){
+    private void showMessage(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(title);
