@@ -1,6 +1,5 @@
 package com.blueradix.android.sqlite;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,25 +9,29 @@ import android.widget.SeekBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.blueradix.android.sqlite.entities.Monster;
+import com.blueradix.android.sqlite.services.DataService;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private static final String
-
-    DatabaseHelper databaseHelper;
+    DataService monsterDataService;
     EditText nameEditText;
     EditText descriptionEditText;
     SeekBar scarinessSeekBar;
     EditText idEditText;
     Integer scarinessLevel = 0;
+    Monster monster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        databaseHelper = new DatabaseHelper(this);
+        monsterDataService = new DataService();
+        monsterDataService.init(this);
         //once your database is created, you can find it using Device File Explorer
         //go to: data/data/app_name/databases there you will find your databases
 
@@ -100,16 +103,27 @@ public class MainActivity extends AppCompatActivity {
         descriptionEditText.getText().clear();
         scarinessSeekBar.setProgress(0, true);
         nameEditText.requestFocus();
+        idEditText.getText().clear();
     }
 
     private void add(View view) {
         String name = nameEditText.getText().toString();
         String description = descriptionEditText.getText().toString();
+        if(name.trim().isEmpty()) {
+            Snackbar.make(view, "The Monster's name cannot be empty ", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
-        boolean result = databaseHelper.insert(name, description, scarinessLevel);
+        if(description.trim().isEmpty()) {
+            Snackbar.make(view, "The Monster's description cannot be empty ", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        monster = new Monster(null, name, description, scarinessLevel, null, 0, 0);
+
         //we have to import the material design to use snackbar
         //import com.google.android.material.snackbar.Snackbar;
-        if (result)
+        Long result = monsterDataService.add(monster);
+        if (result > 0)
             Snackbar.make(view, "Your monster was added ", Snackbar.LENGTH_SHORT).show();
         else
             Snackbar.make(view, "Error, we couldn't add the monster ", Snackbar.LENGTH_SHORT).show();
@@ -117,20 +131,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void delete(View view) {
         String id = idEditText.getText().toString();
-        boolean result = databaseHelper.delete(Integer.valueOf(id));
+        if (isMonsterIdEmpty(view, id))
+            return;
+        monster = new Monster();
+        monster.setId(Long.valueOf(id));
+        boolean result = monsterDataService.delete(monster);
         if (result)
             Snackbar.make(view, "Monster id " + id + " was deleted ", Snackbar.LENGTH_SHORT).show();
         else
             Snackbar.make(view, "Error, Monster id " + id + " was not deleted ", Snackbar.LENGTH_SHORT).show();
     }
 
+    private boolean isMonsterIdEmpty(View view, String id) {
+        //clean trailing and leading empty spaces and then check if the size is not 0
+        if(id.trim().isEmpty()){
+            Snackbar.make(view, "You must input the Monster's Id", Snackbar.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
 
     private void update(View view) {
         String id = idEditText.getText().toString();
+
+        if (isMonsterIdEmpty(view, id))
+            return;
+
         String name = nameEditText.getText().toString();
         String description = descriptionEditText.getText().toString();
 
-        boolean result = databaseHelper.update(Integer.valueOf(id), name, description, scarinessLevel);
+        monster = new Monster();
+        monster.setId(Long.valueOf(id));
+        monster.setName(name);
+        monster.setDescription(description);
+        monster.setScariness(scarinessLevel);
+
+        boolean result = monsterDataService.update(monster);
         if (result)
             Snackbar.make(view, "Monster id " + id + " was updated ", Snackbar.LENGTH_SHORT).show();
         else
@@ -139,26 +175,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void viewAll(View view) {
-        Cursor cursor = databaseHelper.getAll();
+        List<Monster> monsters = monsterDataService.getAll();
+        String text = "";
 
-        if (cursor.getCount() == 0) {
-            cursor.close();
-            showMessage("Records", "Nothing found");
-        } else {
-            StringBuilder buffer = new StringBuilder();
-            while (cursor.moveToNext()) {
-                buffer.append("Id: ").append(cursor.getString(0)).append(System.lineSeparator());
-                buffer.append("Name: ").append(cursor.getString(1)).append(System.lineSeparator());
-                buffer.append("description: ").append(cursor.getString(2)).append(System.lineSeparator());
-                buffer.append("scariness: ").append(cursor.getString(3)).append(System.lineSeparator());
-                buffer.append("image: ").append(cursor.getString(4)).append(System.lineSeparator());
-                buffer.append("_____________________________").append(System.lineSeparator());
+        if (monsters.size() > 0) {
+            for( Monster monster : monsters){
+                text = text.concat(monster.toString());
             }
-
-            cursor.close();
-            showMessage("Data", buffer.toString());
+            showMessage("Data", text);
+        } else {
+            showMessage("Records", "Nothing found");
         }
     }
+
 
     private void showMessage(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
