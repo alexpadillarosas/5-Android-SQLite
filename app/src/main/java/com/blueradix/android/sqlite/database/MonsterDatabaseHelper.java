@@ -5,11 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import androidx.annotation.Nullable;
-
 import com.blueradix.android.sqlite.entities.Monster;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,7 +19,7 @@ public class MonsterDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = MonsterDatabaseHelper.class.getName();
 
     private static MonsterDatabaseHelper mInstance = null;
-    private final Context context;
+    private Context context;
 
     //create database constants
     private static final String DATABASE_NAME = "monster.db";
@@ -116,7 +113,7 @@ public class MonsterDatabaseHelper extends SQLiteOpenHelper {
     /**
      * @return  A cursor of all monsters in the table called monster.
      */
-    public Cursor getAll() {
+    private Cursor getAll() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery(GET_ALL_ST, null);
     }
@@ -160,9 +157,8 @@ public class MonsterDatabaseHelper extends SQLiteOpenHelper {
      */
     private String getRandomImageName() {
         Random ran = new Random();
-
         int value = ran.nextInt(30) + 1;
-        return "ic_monster_" + value;
+        return "monster_" + value;
     }
 
     /**
