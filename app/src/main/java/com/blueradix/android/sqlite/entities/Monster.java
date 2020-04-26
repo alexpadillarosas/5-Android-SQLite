@@ -13,6 +13,7 @@ public class Monster implements Serializable {
     private Integer stars;
 
     public Monster() {
+
     }
 
     public Monster(Long id, String name, String description, Integer scariness, String imageFileName, Integer votes, Integer stars) {

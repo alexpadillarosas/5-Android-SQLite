@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Helper class where we will write all operations related to the database
+ */
 public class MonsterDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = MonsterDatabaseHelper.class.getName();
@@ -114,7 +117,6 @@ public class MonsterDatabaseHelper extends SQLiteOpenHelper {
      * @return  A cursor of all monsters in the table called monster.
      */
     public Cursor getAll() {
-//        SQLiteDatabase db = this.getWritableDatabase();
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery(GET_ALL_ST, null);
     }
@@ -166,20 +168,13 @@ public class MonsterDatabaseHelper extends SQLiteOpenHelper {
     /**
      * @return a list of all monsters from the database table called monster
      */
-    public List<Monster> getAllMonsters() {
+    public List<Monster> getMonsters() {
         List<Monster> monsters = new ArrayList<>();
-        Monster monster;
         Cursor cursor = getAll();
 
-//        if (cursor.getCount() == 0) {
-//            cursor.close();
-//            showMessage("Records", "Nothing found");
-//        } else {
-//            StringBuilder buffer = new StringBuilder();
-
         if(cursor.getCount() > 0) {
+            Monster monster;
             while (cursor.moveToNext()) {
-
                 Long id = cursor.getLong(0);
                 String name = cursor.getString(1);
                 String description = cursor.getString(2);
@@ -190,18 +185,7 @@ public class MonsterDatabaseHelper extends SQLiteOpenHelper {
 
                 monster = new Monster(id, name, description, scariness, imageFileName, votes, stars);
                 monsters.add(monster);
-
-                /*
-                buffer.append("Id: ").append(cursor.getString(0)).append(System.lineSeparator());
-                buffer.append("Name: ").append(cursor.getString(1)).append(System.lineSeparator());
-                buffer.append("description: ").append(cursor.getString(2)).append(System.lineSeparator());
-                buffer.append("scariness: ").append(cursor.getString(3)).append(System.lineSeparator());
-                buffer.append("image: ").append(cursor.getString(4)).append(System.lineSeparator());
-                buffer.append("_____________________________").append(System.lineSeparator());
-
-                 */
             }
-//            showMessage("Data", buffer.toString());
         }
         cursor.close();
         return monsters;

@@ -17,13 +17,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    DataService monsterDataService;
-    EditText nameEditText;
-    EditText descriptionEditText;
-    SeekBar scarinessSeekBar;
-    EditText idEditText;
-    Integer scarinessLevel = 0;
-    Monster monster;
+    private DataService monsterDataService;
+    private EditText nameEditText;
+    private EditText descriptionEditText;
+    private SeekBar scarinessSeekBar;
+    private EditText idEditText;
+    private Integer scarinessLevel = 0;
+    private Monster monster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 clear(view);
             }
         });
+
     }
 
     private void clear(View view) {
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void viewAll(View view) {
-        List<Monster> monsters = monsterDataService.getAll();
+        List<Monster> monsters = monsterDataService.getMonsters();
         String text = "";
 
         if (monsters.size() > 0) {

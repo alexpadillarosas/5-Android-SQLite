@@ -35,8 +35,8 @@ public class DataService {
         return sqlite.update(monster.getId(), monster.getName(), monster.getDescription(), monster.getScariness());
     }
 
-    public List<Monster> getAll(){
-        List<Monster> monsters = sqlite.getAllMonsters();
+    public List<Monster> getMonsters(){
+        List<Monster> monsters = sqlite.getMonsters();
         return monsters;
     }
 
